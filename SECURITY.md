@@ -1,0 +1,21 @@
+# Security design
+
+- Passwords are hashed with Argon2id; plaintext passwords are never stored.
+- Authentication uses an httpOnly SameSite session cookie. Production must use HTTPS and `COOKIE_SECURE=true`.
+- State-changing API calls require a CSRF token.
+- Helmet security headers and rate limiting are enabled.
+- Repeated failed logins temporarily lock the account.
+- Authorization is enforced on the server, not only in the React UI.
+- Admin is owner-only; public signup cannot create an Admin account.
+- New public signups are OPERATOR accounts and each Operator's customer, transaction, service, day and report data is filtered by that Operator's user ID.
+- Admin can access all Operators' data; one Operator cannot access another Operator's data.
+- Full Aadhaar is encrypted at rest and masked in normal views. Admin-only reveal requires re-authentication.
+- Daily Transactions full-detail unlock is Admin-only and uses the server-side Admin PIN.
+- The Paytm Business QR subscription flow is manual: QR payment → UTR/date-time submission → Admin verification → Approve/Reject. No payment gateway secret is shipped to the client.
+- UTR / Transaction ID is unique across payment submissions.
+- Subscription access is checked server-side before paid tools are used.
+- Personal Operator backup is available separately so an Operator can keep their own copy.
+- Admin backups do not include password hashes.
+- Day Closing Lock prevents normal edits after a day is closed.
+- Audit logs record security-sensitive actions.
+- Database credentials, Admin credentials, PIN and encryption key belong only in server environment variables.
